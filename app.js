@@ -453,7 +453,7 @@ function openSettings() {
       h('div', { class: 'height-fields' }, feetInput, inchInput)),
     h('h2', { class: 'section-title' }, 'Backup'),
     h('p', { class: 'muted small' },
-      'Everything lives only on this phone, and deleting the app deletes it. ',
+      'Everything lives only on this phone. Clearing browser data or uninstalling can erase it. ',
       state.lastBackup ? `Last backup: ${monthDay(state.lastBackup)}.` : 'No backup yet.'),
     h('div', { class: 'button-row' },
       h('button', { class: 'secondary-btn', type: 'button', onclick: saveBackup }, 'Save a backup'),

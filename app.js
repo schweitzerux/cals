@@ -365,23 +365,31 @@ function openDaySheet(day) {
 
 sheet.addEventListener('close', () => { openDay = null; });
 
+// Android's share sheet refuses .json files, so backups are plain text. Restore reads either.
 async function saveBackup() {
-  const name = `cals-backup-${today()}.json`;
-  state.lastBackup = today();
-  save();
-  const blob = new Blob([JSON.stringify(state, null, 1)], { type: 'application/json' });
-  const file = new File([blob], name, { type: 'application/json' });
+  const name = `cals-backup-${today()}.txt`;
+  const blob = new Blob([JSON.stringify({ ...state, lastBackup: today() }, null, 1)], { type: 'text/plain' });
+  const file = new File([blob], name, { type: 'text/plain' });
+  let saved = false;
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try {
-      await navigator.share({ files: [file] });
-    } catch { /* closed the share sheet */ }
-  } else {
-    const link = h('a', { href: URL.createObjectURL(blob), download: name });
-    link.click();
-    URL.revokeObjectURL(link.href);
+      await navigator.share({ files: [file], title: name });
+      saved = true;
+    } catch (error) {
+      if (error.name === 'AbortError') return; // closed the share sheet without saving
+    }
   }
+  if (!saved) {
+    const url = URL.createObjectURL(blob);
+    const link = h('a', { href: url, download: name, hidden: true });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000); // revoking right away cancels the download
+  }
+  commit((s) => { s.lastBackup = today(); });
   openSettings();
-  render();
+  if (!saved) showToast('Backup saved to Downloads'); // after openSettings, which redraws the sheet
 }
 
 function restore(text) {
@@ -429,7 +437,7 @@ function openSettings() {
 
   const fileInput = h('input', {
     type: 'file',
-    accept: 'application/json,.json',
+    accept: '.txt,.json,text/plain,application/json',
     hidden: true,
     onchange: async (event) => {
       const file = event.target.files[0];

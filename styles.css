@@ -159,6 +159,8 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 textarea.add-input { height: 96px; padding: 10px 14px; width: 100%; resize: vertical; }
 .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 
+.version { margin-top: 24px; text-align: center; font-size: 13px; color: var(--muted); }
+
 /* Toast */
 #toast {
   position: fixed; left: 16px; right: 16px; z-index: 5; pointer-events: none;

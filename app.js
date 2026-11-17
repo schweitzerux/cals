@@ -3,6 +3,7 @@ import {
   dayTotal, weekTotal, weekWeight, latestWeight, bmi, estimate, isValidBackup,
 } from './logic.js';
 
+const VERSION = '1.3'; // bump with every release so the phone shows which one it has
 const STORE_KEY = 'cals-state';
 const app = document.getElementById('app');
 const sheet = document.getElementById('sheet');
@@ -486,7 +487,8 @@ function openSettings() {
           commit((s) => s.hiddenSaved.push(item.key));
           openSettings();
         },
-      }, '×')))) : null));
+      }, '×')))) : null,
+    h('p', { class: 'version' }, `Cals version ${VERSION}`)));
   if (!sheet.open) sheet.showModal();
 }
 
